@@ -1,6 +1,8 @@
 """
 CSC 580 HW#4 "QLearning.py" -- Q-learning for the Snake Game
-
+Name : Om Prakash Gunja
+Assignment : HW4
+Student ID: 2131025
 """
 import matplotlib
 import SnakeEnv as snake_env
@@ -10,6 +12,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import random
 import copy
+
+print ("* Q-learning for the Snake Game")
 
 def q_learning(agent, env, max_steps, train=True):
     """
@@ -23,14 +27,12 @@ def q_learning(agent, env, max_steps, train=True):
     # First reset the environment
     state = env.reset()
     agent.init_state(state) #(A)
-    
     # Initialize some housekeeping variables
     total_return, n_apples, n_stops, n_goodsteps = 0.0, 0, 0, 0
     done = False
    
     # Play continuously until max_steps.
     for i in range(max_steps):
-        
         # Select the action to take at this state. 
         if train:
             action = agent.select_action(state)  #(A) epsilon greedy selection
@@ -42,7 +44,7 @@ def q_learning(agent, env, max_steps, train=True):
         
         # Q-learning if training -- update the Q-table
         if train:
-            agent.update_Qtable(state, action, reward, next_state)  #(A) 
+            agent.update_Qtable(state, action, reward, next_state, done)  #(A) 
             
         # Update to prepare for the next iteration
         state = next_state
@@ -64,9 +66,7 @@ def q_learning(agent, env, max_steps, train=True):
     
 # Do q_learning for 'num_runs' times.  For each run, 'num_steps' steps is done.
 def run_ql(max_runs, max_steps, in_params, qtable_file, display = False, train = False):
-    """
-
-    """
+    print ("* Running Q-learning for {} runs, each with {} steps...".format(max_runs, max_steps))
     num_runs = max_runs
     num_steps = max_steps
     results_list = []
@@ -74,13 +74,13 @@ def run_ql(max_runs, max_steps, in_params, qtable_file, display = False, train =
     best_qtable = None
 
     for run in range(num_runs):
-        # reset params
+        #reset params
         params = copy.deepcopy(in_params)  # reset the parameters
 
         # Create an environment and an agent
         env = snake_env.SnakeEnv()
-        agent = agent_class.Agent(env, params)
 
+        agent = agent_class.Agent(env, params)
         env.display = display  ## <== display True/False (on/off)
 
         # If evaluation, read in the given q-table (otherwise q_learning() initializes to small random numbers)
@@ -105,26 +105,27 @@ def run_ql(max_runs, max_steps, in_params, qtable_file, display = False, train =
 
     return results_list
 
-##===================================================
-## Call run_ql() for either/both training and evaluation
-num_runs = 1      #10
-num_steps = 1000 #300   #1000
+# #===================================================
+# # Call run_ql() for either/both training and evaluation
+# num_runs = 10      #10
+# num_steps = 10000 #300   #1000
 
-params = dict()
-params['gamma'] = 0.95
-params['alpha'] = 0.7
-params['epsilon'] = 0.6  # exploration probability at start
-params['epsilon_min'] = .01  # minimum epsilon
-params['epsilon_decay'] = .995  # exponential decay rate for epsilon
+# params = dict()
+# params['gamma'] = 0.95
+# params['alpha'] = 0.7
+# params['epsilon'] = 0.6  # exploration probability at start
+# params['epsilon_min'] = .01  # minimum epsilon
+# params['epsilon_decay'] = .995  # exponential decay rate for epsilon
 
-qtable_file = "qtable_2025.csv" #"qtable_true.csv" #None
+# qtable_file = "qtable_2025.csv" #"qtable_true.csv" #None 
 
-# Call run_ql() for either training or evaluation
-results_list = run_ql(num_runs, num_steps, params, qtable_file, display = True, train = False) # evaluation
-#results_list = run_ql(num_runs, num_steps, params, qtable_file, display = False, train = True) # training
+# print ("* Q-learning for training and evaluation...")
+# # Call run_ql() for either training or evaluation
+# #results_list = run_ql(num_runs, num_steps, params, qtable_file, display = True, train = False) # evaluation
+# results_list = run_ql(num_runs, num_steps, params, qtable_file, display = False, train = True) # training
 
-results = np.array(results_list)
-cmean = np.mean(results, axis=0)
-print ("\n** Mean: Return={:>8.3f}, #Apples={}, #Stops={}, #GoodSteps={}, #UniqueStatesVisited={}"
-           .format(cmean[0], cmean[1], cmean[2], cmean[3], cmean[4]))
+# results = np.array(results_list)
+# cmean = np.mean(results, axis=0)
+# print ("\n** Mean: Return={:>8.3f}, #Apples={}, #Stops={}, #GoodSteps={}, #UniqueStatesVisited={}"
+#            .format(cmean[0], cmean[1], cmean[2], cmean[3], cmean[4]))
            
